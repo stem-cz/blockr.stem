@@ -1,0 +1,39 @@
+# blockr.stem
+
+A **blockr** extension that provides STEM-branded blocks for a full
+survey-charting pipeline.
+
+## Installation
+
+Install using:
+
+``` r
+
+pak::pak("stem-cz/blockr.stem")
+```
+
+# Package index
+
+## All functions
+
+- [`new_stem_chart_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_chart_block.md)
+  : STEM Chart block
+- [`new_stem_export_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_export_block.md)
+  [`block_ui(`*`<stem_export_block>`*`)`](https://stem-cz.github.io/blockr.stem/reference/new_stem_export_block.md)
+  [`block_output(`*`<stem_export_block>`*`)`](https://stem-cz.github.io/blockr.stem/reference/new_stem_export_block.md)
+  : STEM Export block
+- [`new_stem_import_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_import_block.md)
+  [`stem_import_volumes()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_import_block.md)
+  : STEM Import block
+- [`new_stem_var_selector_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_var_selector_block.md)
+  [`block_output(`*`<stem_var_selector_block>`*`)`](https://stem-cz.github.io/blockr.stem/reference/new_stem_var_selector_block.md)
+  : STEM Variable Selector block
+- [`new_stem_visualize_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_visualize_block.md)
+  : STEM Visualize block
+- [`new_theme_stem_block()`](https://stem-cz.github.io/blockr.stem/reference/new_theme_stem_block.md)
+  : Theme STEM block
+- [`set_label_size()`](https://stem-cz.github.io/blockr.stem/reference/set_label_size.md)
+  : Resize a plot's data labels
+- [`stem_write_pptx_chart()`](https://stem-cz.github.io/blockr.stem/reference/stem_write_pptx_chart.md)
+  : Export a STEM plot as a native, editable PowerPoint chart
+
