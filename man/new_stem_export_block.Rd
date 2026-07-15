@@ -34,9 +34,9 @@ PowerPoint chart export, which is not rasterised.}
 
 \item{...}{Forwarded to \code{\link[blockr.ggplot:new_ggplot_transform_block]{blockr.ggplot::new_ggplot_transform_block()}}.}
 
-\item{id, x}{Passed by blockr when rendering the block UI.}
+\item{id}{Passed by blockr when rendering the block UI.}
 
-\item{x, result, session}{Passed by blockr when rendering the block output.}
+\item{x, result, session}{Passed by blockr when rendering the block UI/output.}
 }
 \value{
 A ggplot transform block object of class \code{stem_export_block}.

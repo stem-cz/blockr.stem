@@ -163,7 +163,7 @@ new_stem_import_block <- function(file_path = character(), args = list(),
             class = "blockr-stem-import-header",
             shinyFiles::shinyFilesButton(
               NS(id, "file"),
-              label = "Choose file…",
+              label = "Choose file\u2026",
               title = "Select a data file to import",
               multiple = FALSE,
               class = "btn-primary"

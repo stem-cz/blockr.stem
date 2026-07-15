@@ -163,8 +163,8 @@ new_stem_export_block <- function(format = c("png", "svg", "pptx"), width = 14,
 #' factor changes the apparent size of the text and marks. The preview updates
 #' automatically whenever the format, width, height or scaling inputs change.
 #'
-#' @param id,x Passed by blockr when rendering the block UI.
-#' @param x,result,session Passed by blockr when rendering the block output.
+#' @param id Passed by blockr when rendering the block UI.
+#' @param x,result,session Passed by blockr when rendering the block UI/output.
 #' @rdname new_stem_export_block
 #' @exportS3Method blockr.core::block_ui
 block_ui.stem_export_block <- function(id, x, ...) {
