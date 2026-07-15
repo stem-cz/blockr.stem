@@ -17,12 +17,17 @@ test_that("picking a file emits a rio::import() call that reads it", {
   saveRDS(df, path)
   path <- normalizePath(path)
 
-  vols <- c(Root = "/")
-  comps <- strsplit(sub("^/", "", path), "/", fixed = TRUE)[[1]]
-  # shinyFiles selection structure that parseFilePaths() understands.
-  sel <- list(root = "Root", files = list(as.list(comps)))
+  # Root the file browser at the file's own directory rather than "/". Splitting
+  # an absolute path on "/" and rebuilding from "/" is Unix-only: on Windows a
+  # normalized path starts with a drive letter (C:\...), so parseFilePaths()
+  # would reconstruct a bogus "/C:/..." path that does not exist.
+  vols <- c(Test = dirname(path))
+  sel <- list(root = "Test", files = list(list(basename(path))))
+  # The block stores whatever parseFilePaths() reconstructs (forward slashes on
+  # Windows), so compare state against that round-tripped value, not `path`.
+  expected <- unname(shinyFiles::parseFilePaths(vols, sel)$datapath)
 
-  blk <- new_stem_import_block()
+  blk <- new_stem_import_block(volumes = vols)
   testServer(
     function(id) blockr.core::expr_server(blk, data = list()),
     {
@@ -31,7 +36,7 @@ test_that("picking a file emits a rio::import() call that reads it", {
       expr <- session$returned$expr()
       code <- paste(deparse(expr), collapse = " ")
       expect_match(code, "rio::import")
-      expect_identical(session$returned$state$file_path(), path)
+      expect_identical(session$returned$state$file_path(), expected)
 
       # blockr's check_expr_val requires state to return every constructor
       # input (this caught a missing `volumes` that crashed the board).
@@ -70,11 +75,12 @@ test_that("CSV options flow from the gear popover into the read expression", {
   writeLines(c("# junk", "# junk2", "x;y", "1;p", "2;q"), path)
   path <- normalizePath(path)
 
-  vols <- c(Root = "/")
-  comps <- strsplit(sub("^/", "", path), "/", fixed = TRUE)[[1]]
-  sel <- list(root = "Root", files = list(as.list(comps)))
+  # See the rds test above: root the browser at the file's directory so the
+  # synthesized selection reconstructs to a real path on Windows too.
+  vols <- c(Test = dirname(path))
+  sel <- list(root = "Test", files = list(list(basename(path))))
 
-  blk <- new_stem_import_block()
+  blk <- new_stem_import_block(volumes = vols)
   testServer(
     function(id) blockr.core::expr_server(blk, data = list()),
     {
