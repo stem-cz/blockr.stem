@@ -1,0 +1,30 @@
+Package: blockr.stem
+Title: Stem Theme Block for blockr
+Version: 0.0.1
+Authors@R:
+    person("Aleš", "Vomáčka", role = c("aut", "cre"),
+           email = "ales.vomacka@stem.cz")
+Description: A small blockr extension that provides STEM blocks for importing, exportin and plotting data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Imports:
+    blockr.core,
+    blockr.ggplot,
+    colourpicker,
+    DT,
+    ggplot2,
+    readr,
+    readxl,
+    rio,
+    shiny,
+    shinyFiles,
+    stemtools
+Suggests:
+    mschart,
+    officer,
+    rlang,
+    svglite,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
