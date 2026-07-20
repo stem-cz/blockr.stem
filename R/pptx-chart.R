@@ -149,12 +149,28 @@ stem_pptx_chart <- function(plot) {
   chart
 }
 
+# The native chart's axis / legend text point size (see stem_pptx_theme()). Also
+# the reference the label and preview scaling are expressed against.
+stem_pptx_axis_size <- 11
+
 # stemtools sizes the plot's data labels for its own axis text (theme_stem()'s
 # axis text is ~14.4pt). The native chart uses smaller 11pt axis/legend text, so
 # the raw label size looks oversized against it; scale the labels by 11/14 (the
 # chart's base font over the plot's label reference) to keep the same
 # label-to-axis proportion the plot has. Applied to the exported label font only.
-stem_pptx_label_scale <- 11 / 14
+stem_pptx_label_scale <- stem_pptx_axis_size / 14
+
+# Preview-only `scale` for the pptx format. The pptx preview is a raster of the
+# raw ggplot; the exported native chart is smaller-texted. We match the *data
+# labels* - the chart's prominent text (the percentage numbers on the bars) -
+# rather than the axis text: the export draws them at stem_pptx_label_scale of
+# the plot's label size, so ggsave's `scale` (which shrinks apparent text as it
+# grows) must preview at the inverse ratio to reproduce the exported label size.
+# This reduces to 14/11 for the default 14pt labels and, because the chart
+# scales whatever label size the plot has, keeps the previewed labels matching
+# the export at any label size (and independent of the base font size, which the
+# labels don't follow). Axis text then lands within ~3%, secondary to the labels.
+stem_pptx_preview_scale <- 1 / stem_pptx_label_scale
 
 # Point size of the plot's data labels, read off the geom_text / geom_label
 # layer. When set_label_size() has pinned a size we use it (e.g. 14); when the
@@ -234,10 +250,10 @@ stem_pptx_theme <- function(style, legend_pos) {
   }
   none <- officer::fp_border(width = 0)
   mschart::mschart_theme(
-    axis_text = txt(11),
+    axis_text = txt(stem_pptx_axis_size),
     axis_title = txt(12),
     main_title = txt(14, bold = TRUE),
-    legend_text = txt(11),
+    legend_text = txt(stem_pptx_axis_size),
     grid_major_line = none,
     grid_minor_line = none,
     axis_ticks = none,
@@ -282,7 +298,25 @@ stem_pptx_chart_data <- function(plot) {
   if (!is.null(series)) {
     df$series <- factor(series, levels = unique(series))
   }
-  df
+
+  # Ad-hoc axis-order fix: ggplot draws the first category at the BOTTOM of the
+  # (horizontal) y axis, but a native mschart chart comes out with the categories
+  # in the reverse order - so without this the exported bars are upside down
+  # relative to the plot and the PNG/SVG exports. mschart orders the category
+  # axis differently for the two chart shapes we emit (both verified against the
+  # written OOXML), so the reversal differs:
+  if (is.null(df$series)) {
+    # Single-series (plain bar): the category axis follows *row* order. Reverse
+    # the rows. The bars are one colour, so the fill pairing in
+    # stem_pptx_series_fills (which is positional against the plot) is unaffected.
+    df[rev(seq_len(nrow(df))), , drop = FALSE]
+  } else {
+    # Grouped / inline (stacked): the category axis follows the category factor's
+    # *levels*. Reverse those, leaving the row order - and thus the per-series
+    # colour pairing and the stacked-series order - untouched.
+    df$category <- factor(df$category, levels = rev(levels(df$category)))
+    df
+  }
 }
 
 # Map each level of `df[[key]]` to the fill colour stemtools drew it with, so the

@@ -1,6 +1,6 @@
 Package: blockr.stem
 Title: Stem Theme Block for blockr
-Version: 0.1.0
+Version: 0.1.1
 Authors@R:
     person("Aleš", "Vomáčka", role = c("aut", "cre"),
            email = "ales.vomacka@stem.cz")

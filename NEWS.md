@@ -1,3 +1,15 @@
+# blockr.stem 0.1.1
+
+* **STEM Export** — the PowerPoint chart preview now renders its text at the same
+  size as the exported native chart. The preview is scaled to match the chart's
+  data labels (`1 / stem_pptx_label_scale`), so it no longer shows oversized
+  fonts relative to the downloaded `.pptx`.
+
+* **STEM Export** — fixed the category (y-axis) order of the exported PowerPoint
+  chart, which came out reversed relative to the preview and the PNG/SVG exports.
+  The reversal accounts for mschart ordering the category axis by row order for
+  single-series bar charts and by factor levels for grouped/stacked charts.
+
 # blockr.stem 0.1.0
 
 First release.

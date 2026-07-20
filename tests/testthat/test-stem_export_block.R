@@ -34,6 +34,14 @@ test_that("effective export sizes fall back to the advertised defaults", {
   expect_equal(stem_export_eff_height(NA, bar), 10) # type-based default
 })
 
+test_that("the pptx preview scale matches the exported data-label size (14/11)", {
+  # The preview must shrink the plot's 14pt labels to the chart's 11pt (the
+  # exported chart draws them at stem_pptx_label_scale = 11/14 of the plot size),
+  # so the preview scale is the inverse of that label scaling.
+  expect_equal(stem_pptx_preview_scale, 14 / 11)
+  expect_equal(stem_pptx_preview_scale, 1 / stem_pptx_label_scale)
+})
+
 test_that("the preview renders at the chosen export size and scaling", {
   skip_if_not_installed("stemtools")
   skip_if_not_installed("png")
@@ -65,8 +73,15 @@ test_that("the preview renders at the chosen export size and scaling", {
   expect_gt(preview_dim(14, 20, 1.5)[2L], base[2L])
   expect_true(all(preview_dim(14, 10, 3.0) > base))
 
-  # The PowerPoint chart ignores scaling, so its preview matches scale 1.
-  expect_equal(preview_dim(14, 10, 3.0, "pptx"), preview_dim(14, 10, 1.0, "png"))
+  # The PowerPoint chart ignores the user's scaling control, but its preview is
+  # rendered at stem_pptx_preview_scale so the previewed font size matches the
+  # smaller text of the exported native chart, not the raw plot.
+  expect_equal(
+    preview_dim(14, 10, 3.0, "pptx"),
+    preview_dim(14, 10, stem_pptx_preview_scale, "png")
+  )
+  # Independent of the scaling control: different `scale` inputs, same pptx preview.
+  expect_equal(preview_dim(14, 10, 0.75, "pptx"), preview_dim(14, 10, 3.0, "pptx"))
 })
 
 test_that("export block passes the plot through and tracks settings", {
@@ -111,6 +126,35 @@ test_that("new_stem_export_block accepts the pptx format", {
   blk <- new_stem_export_block(format = "pptx")
   expect_identical(blk$expr_ui, blk$expr_ui) # constructs without error
   expect_s3_class(blk, "stem_export_block")
+})
+
+test_that("pptx category order matches the plot's y axis (both chart shapes)", {
+  skip_if_not_installed("stemtools")
+
+  # ggplot draws the first category at the BOTTOM of the (horizontal) y axis, but
+  # a native mschart chart reverses that. The reconstructed frame must therefore
+  # lay the categories out to match the plot's y axis read bottom -> top, else the
+  # exported bars come out upside down. mschart keys the category axis off *row*
+  # order for a single-series bar chart but off the category factor's *levels* for
+  # a grouped/stacked chart, so the fix (and this test) covers both shapes.
+  plot_y <- function(p) {
+    ggplot2::ggplot_build(p)$layout$panel_params[[1]]$y$get_labels()
+  }
+
+  # Single-series bar: check the row order.
+  p1 <- stemtools::stem_barplot(data.frame(g = factor(rep(c("Low", "Mid", "High"), 4))), g)
+  d1 <- stem_pptx_chart_data(p1)
+  expect_equal(as.character(unique(d1$category)), plot_y(p1))
+  expect_null(d1$series)
+
+  # Grouped/stacked: check the category factor levels (rows untouched).
+  df <- data.frame(
+    g = factor(rep(c("Yes", "No", "Maybe"), 4)),
+    grp = factor(rep(c("Group1", "Group2"), each = 6))
+  )
+  p2 <- stemtools::stem_barplot(df, g, group = grp)
+  d2 <- stem_pptx_chart_data(p2)
+  expect_equal(levels(d2$category), plot_y(p2))
 })
 
 test_that("scaling defaults to 1.5 and is tracked in state", {

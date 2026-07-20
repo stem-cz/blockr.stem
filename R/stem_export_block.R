@@ -192,9 +192,16 @@ block_output.stem_export_block <- function(x, result, session) {
 
       width <- stem_export_eff_width(ctrl("width"))
       height <- stem_export_eff_height(ctrl("height"), result)
-      # The PowerPoint chart is not rasterised and ignores `scale`, so preview
-      # it at scale 1 to match; PNG/SVG previews honour the scaling control.
-      scale <- if (identical(fmt, "pptx")) 1 else stem_export_eff_scale(ctrl("scale"))
+      # The PowerPoint chart is not rasterised and ignores the `scale` control,
+      # but the native chart does shrink the plot's text to ~11pt on export. The
+      # raster preview must reproduce that shrink (via ggsave's `scale`) or the
+      # pptx preview shows text too big relative to the actual export; see
+      # stem_pptx_preview_scale. PNG/SVG previews honour the scaling control.
+      scale <- if (identical(fmt, "pptx")) {
+        stem_pptx_preview_scale
+      } else {
+        stem_export_eff_scale(ctrl("scale"))
+      }
 
       file <- tempfile(fileext = ".png")
       # Same call as the download handler (raster preview even for SVG/PPTX,
