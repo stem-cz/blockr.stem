@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">blockr.stem</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,11 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.1" id="blockrstem-011">blockr.stem 0.1.1<a class="anchor" aria-label="anchor" href="#blockrstem-011"></a></h2>
+<ul><li><p><strong>STEM Export</strong> — the PowerPoint chart preview now renders its text at the same size as the exported native chart. The preview is scaled to match the chart’s data labels (<code>1 / stem_pptx_label_scale</code>), so it no longer shows oversized fonts relative to the downloaded <code>.pptx</code>.</p></li>
+<li><p><strong>STEM Export</strong> — fixed the category (y-axis) order of the exported PowerPoint chart, which came out reversed relative to the preview and the PNG/SVG exports. The reversal accounts for mschart ordering the category axis by row order for single-series bar charts and by factor levels for grouped/stacked charts.</p></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="blockrstem-010">blockr.stem 0.1.0<a class="anchor" aria-label="anchor" href="#blockrstem-010"></a></h2>
 <p>First release.</p>
 <ul><li><p><strong>STEM Import</strong> (<code><a href="../reference/new_stem_import_block.html">new_stem_import_block()</a></code>) — root data block that imports a data set from a file chosen with a point-and-click file browser (<code>shinyFiles</code>). Delimited text is read with <code>readr</code>, spreadsheets with <code>readxl</code>, and everything else (<code>.rds</code>, <code>.sav</code>, <code>.dta</code>, <code>.parquet</code>, …) with <code><a href="http://gesistsa.github.io/rio/reference/import.html" class="external-link">rio::import()</a></code>. Format-specific options are exposed via a gear popover.</p></li>
@@ -41,7 +46,8 @@
 <li><p><strong>Theme STEM</strong> (<code><a href="../reference/new_theme_stem_block.html">new_theme_stem_block()</a></code>) — applies the Stem ggplot2 theme (<code><a href="https://stem-cz.github.io/stemtools/reference/theme_stem.html" class="external-link">stemtools::theme_stem()</a></code>) to an upstream plot, controlling ink, paper, accent and font family.</p></li>
 <li><p><strong>STEM Export</strong> (<code><a href="../reference/new_stem_export_block.html">new_stem_export_block()</a></code>) — previews an upstream plot and downloads it as PNG or SVG at a chosen size in centimetres, or as a native, editable PowerPoint chart (<code>.pptx</code>) via <code><a href="../reference/stem_write_pptx_chart.html">stem_write_pptx_chart()</a></code>.</p></li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
