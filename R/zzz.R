@@ -36,6 +36,18 @@
     overwrite = TRUE
   )
   blockr.core::register_blocks(
+    "new_stem_visualize_battery_block",
+    name = "STEM Visualize battery",
+    description = paste(
+      "Plot a battery of same-scale categorical items (e.g. Likert items) as a",
+      "stacked-bar chart (stem_battery) and apply the Stem theme in one block"
+    ),
+    category = "plot",
+    icon = "list-ol",
+    package = pkgname,
+    overwrite = TRUE
+  )
+  blockr.core::register_blocks(
     "new_stem_export_block",
     name = "STEM Export",
     description = paste(
@@ -44,6 +56,19 @@
     ),
     category = "output",
     icon = "download",
+    package = pkgname,
+    overwrite = TRUE
+  )
+  blockr.core::register_blocks(
+    "new_stem_spreadsheet_export_block",
+    name = "STEM Excel Export",
+    description = paste(
+      "Export the data as a readable Excel spreadsheet of frequency tables",
+      "(spreadview::compose_spreadsheet) over its categorical variables, with",
+      "optional grouping variables and a survey weight"
+    ),
+    category = "output",
+    icon = "file-earmark-spreadsheet",
     package = pkgname,
     overwrite = TRUE
   )

@@ -1,3 +1,26 @@
+# blockr.stem 0.1.4
+
+* **STEM Excel Export** (`new_stem_spreadsheet_export_block()`) — new output block
+  that exports the upstream data set as a readable Excel spreadsheet of frequency
+  tables via `spreadview::compose_spreadsheet()`. The variables to tabulate are
+  picked automatically with `spreadview::get_categorical_vars()` — every factor
+  column (add character columns with **Include character variables**), minus any
+  the user chooses to **Exclude** (each listed with its category count, e.g.
+  `region (4)`). Optional **Grouping variables** and a **Survey weight** are
+  forwarded to `compose_spreadsheet()`, along with the **percentage** and
+  **drop-missing** formatting toggles. The block passes its data through
+  unchanged and previews it in the output panel. Requires the GitHub-only
+  `spreadview (>= 0.3.0)` package (in Suggests); character selections are coerced
+  to factors, which `compose_spreadsheet()` requires. spreadview's own console
+  warnings/messages are suppressed as noise in a blockr app.
+
+* **STEM Visualize battery** (`new_stem_visualize_battery_block()`) — new plot
+  block that plots a battery of same-scale categorical items (e.g. Likert items
+  sharing one response scale) as a stacked-bar chart (`stemtools::stem_battery()`)
+  and applies the Stem theme in one block. The items are validated to share
+  identical response categories, so a mismatched selection surfaces an
+  informative error rather than a cryptic reshape failure.
+
 # blockr.stem 0.1.3
 
 * **STEM Visualize** — new chart title options under "Chart options", all off /

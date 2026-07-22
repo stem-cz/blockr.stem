@@ -89,6 +89,49 @@ stem_plot_expr <- function(item, type = "barplot", weight = NULL, group = NULL,
   plot_call
 }
 
+# Build the expression that plots a *battery* of same-scale categorical items
+# with stemtools::stem_battery() (one stacked horizontal bar per item). Emitted
+# via the exported runtime helper blockr.stem::stem_battery_plot(), which
+# validates the items share identical response categories before delegating to
+# stem_battery() - so a mismatched selection surfaces an informative error in the
+# block rather than a cryptic tidy/reshape failure. `items`/`order_by` are
+# character vectors and `weight` a column-name string, all emitted as plain
+# literals (no bare symbols), keeping the generated call self-contained. Shared
+# by new_stem_visualize_battery_block(); optionally wrapped in set_label_size().
+stem_battery_expr <- function(items, weight = NULL, order_by = NULL,
+                              item_label = TRUE, palette = "div1", direction = 1,
+                              labels = TRUE, label_accuracy = 1,
+                              label_hide = 0.05, reverse_levels = FALSE,
+                              label_size = NA_real_) {
+  items <- items[nzchar(items)]
+
+  args <- list(quote(.(data)), items = items)
+  if (has_col(weight)) args[["weight"]] <- weight
+  order_by <- order_by[nzchar(order_by)]
+  if (length(order_by)) args[["order_by"]] <- order_by
+  args[["item_label"]] <- isTRUE(item_label)
+  args[["palette"]] <- palette
+  args[["direction"]] <- direction
+  args[["labels"]] <- labels
+  args[["label_accuracy"]] <- label_accuracy
+  # A cleared field reads as NA; fall back to the stem_battery default so the
+  # call stays valid.
+  if (length(label_hide) != 1L || is.na(label_hide)) label_hide <- 0.05
+  args[["label_hide"]] <- label_hide
+  # Off by default (the natural scale order); only emit when set, to keep the
+  # generated call tidy.
+  if (isTRUE(reverse_levels)) args[["reverse_levels"]] <- TRUE
+
+  plot_call <- as.call(c(list(quote(blockr.stem::stem_battery_plot)), args))
+
+  if (length(label_size) == 1L && !is.na(label_size)) {
+    plot_call <- as.call(
+      list(quote(blockr.stem::set_label_size), plot_call, label_size)
+    )
+  }
+  plot_call
+}
+
 # Expression for the STEM Variable Selector: output the selected column, plus
 # the weight and/or group columns tagged with `stem_weight` / `stem_group`
 # attributes when chosen. Downstream plot blocks read those attributes.
@@ -252,6 +295,37 @@ stem_weight_choices <- function(data) {
 stem_group_choices <- function(data) {
   cats <- names(data)[vapply(data, function(x) is.factor(x) || is.character(x), logical(1))]
   c(`(none)` = "", stats::setNames(cats, cats))
+}
+
+# The response categories of a categorical column: a factor's `levels()` (order
+# preserved, as that is the battery's item/segment order), or the sorted unique
+# values of a character column. The unit that must match across a battery's items.
+stem_col_levels <- function(x) {
+  if (is.factor(x)) levels(x) else sort(unique(as.character(x)))
+}
+
+# The shared response categories to offer as `order_by` choices for a battery of
+# `items` (column-name character vector): the levels of the first selected
+# categorical item. Best-effort - when the selected items' levels disagree the
+# authoritative check lives in stem_battery_plot(), which errors on export.
+stem_battery_levels <- function(data, items) {
+  items <- intersect(items[nzchar(items)], names(data))
+  is_cat <- vapply(
+    data[items], function(x) is.factor(x) || is.character(x), logical(1)
+  )
+  items <- items[is_cat]
+  if (!length(items)) character(0) else stem_col_levels(data[[items[1]]])
+}
+
+# Choices for a categorical-variable selectInput: like stem_var_choices() (values
+# are the column names, display is "<col> - <label>" when labelled) but limited to
+# the factor / character columns - the only variables a battery can plot.
+stem_cat_var_choices <- function(data) {
+  choices <- stem_var_choices(data)
+  is_cat <- vapply(
+    data[choices], function(x) is.factor(x) || is.character(x), logical(1)
+  )
+  choices[is_cat]
 }
 
 # Named choices for a variable selectInput: values are the column names, the

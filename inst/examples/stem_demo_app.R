@@ -1,9 +1,13 @@
 # Minimal blockr.stem demo app
 # -----------------------------
-# STEM Variable Selector -> STEM Visualize -> STEM Export, seeded by a
-# blockr.core static block holding a small synthetic, *labelled* survey data set
-# (the variable labels are what the Visualize block's "Show title" option and the
-# PowerPoint chart title display).
+# Two chains seeded by one blockr.core static block holding a small synthetic,
+# *labelled* survey data set (the variable labels are what the Visualize block's
+# "Show title" option and the PowerPoint chart title display):
+#   1. STEM Variable Selector -> STEM Visualize -> STEM Export (single variable)
+#   2. STEM Visualize battery -> STEM Export (a set of same-scale Likert items,
+#      agree1..agree4, which all share one 5-point agreement scale)
+#   3. STEM Excel Export - tabulates every categorical variable of the survey
+#      into a downloadable Excel spreadsheet (here grouped by region, weighted)
 #
 # The interactive UI is provided by blockr.dock (the docking layout). Serving a
 # plain blockr.core::new_board() renders an unstyled page - the app must be a
@@ -32,6 +36,20 @@ labelled <- function(x, label) {
 
 set.seed(42)
 n <- 400
+
+# A battery of Likert items that all share ONE 5-point agreement scale - the
+# input the STEM Visualize battery block expects (it only plots items with
+# identical response categories). Same levels, different label per item.
+agree_levels <- c(
+  "Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"
+)
+agree_item <- function(label, prob) {
+  labelled(
+    factor(sample(agree_levels, n, replace = TRUE, prob = prob), levels = agree_levels),
+    label
+  )
+}
+
 survey <- data.frame(
   satisfaction = labelled(
     factor(
@@ -73,6 +91,18 @@ survey <- data.frame(
     factor(sample(c("North", "South", "East", "West"), n, replace = TRUE)),
     "Region"
   ),
+  agree1 = agree_item(
+    "The staff were friendly and helpful", c(0.05, 0.1, 0.15, 0.4, 0.3)
+  ),
+  agree2 = agree_item(
+    "The service was good value for money", c(0.1, 0.2, 0.25, 0.3, 0.15)
+  ),
+  agree3 = agree_item(
+    "I found what I was looking for quickly", c(0.15, 0.25, 0.2, 0.25, 0.15)
+  ),
+  agree4 = agree_item(
+    "I would use this service again", c(0.05, 0.1, 0.2, 0.35, 0.3)
+  ),
   weight = round(stats::runif(n, 0.5, 2), 2),
   stringsAsFactors = FALSE
 )
@@ -89,15 +119,34 @@ serve(
       survey = new_static_block(survey),
       select = new_stem_var_selector_block(var = "satisfaction"),
       viz = new_stem_visualize_block(var = "satisfaction", title_show = TRUE),
-      export = new_stem_export_block(format = "pptx")
+      export = new_stem_export_block(format = "pptx"),
+      # The battery block reads a set of same-scale items straight from the data,
+      # so it connects directly to the static survey block (not via the selector).
+      battery = new_stem_visualize_battery_block(
+        items = c("agree1", "agree2", "agree3", "agree4"),
+        order_by = c("Strongly agree", "Agree")
+      ),
+      battery_export = new_stem_export_block(format = "png"),
+      # The Excel export reads its categorical variables straight from the data,
+      # so it too connects directly to the static survey block. Here it groups
+      # the frequency tables by region and weights them by the `weight` column.
+      xlsx_export = new_stem_spreadsheet_export_block(
+        group = "region", weight = "weight"
+      )
     ),
     links = c(
       l1 = new_link("survey", "select", "data"),
       l2 = new_link("select", "viz", "data"),
-      l3 = new_link("viz", "export", "data")
+      l3 = new_link("viz", "export", "data"),
+      l4 = new_link("survey", "battery", "data"),
+      l5 = new_link("battery", "battery_export", "data"),
+      l6 = new_link("survey", "xlsx_export", "data")
     ),
     extensions = list(edit = new_edit_board_extension()),
-    views = list(c("edit", "survey", "select", "viz", "export"))
+    views = list(c(
+      "edit", "survey", "select", "viz", "export", "battery", "battery_export",
+      "xlsx_export"
+    ))
   ),
   "my_board"
 )
