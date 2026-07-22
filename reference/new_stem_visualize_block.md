@@ -21,6 +21,9 @@ new_stem_visualize_block(
   direction = 1,
   labels = TRUE,
   label_accuracy = 1,
+  title_show = FALSE,
+  title_quote = FALSE,
+  title_wrap = 80,
   ink = "black",
   paper = "white",
   accent = "#35978F",
@@ -56,6 +59,24 @@ new_stem_visualize_block(
 
   Chart styling passed to the stemtools function (see
   [`new_stem_chart_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_chart_block.md)).
+
+- title_show:
+
+  If `TRUE`, draw the plotted variable's label as the chart title.
+  Defaults to `FALSE`.
+
+- title_quote:
+
+  If `TRUE`, wrap the title in typographic quotation marks. Only takes
+  effect when `title_show` is `TRUE`. Defaults to `FALSE`.
+
+- title_wrap:
+
+  Maximum number of characters per title line; longer titles are wrapped
+  onto several lines so they do not overflow the plot. Only takes effect
+  when `title_show` is `TRUE`, and only affects the ggplot-drawn title
+  in the PNG/SVG (ggsave) exports - the native PowerPoint chart is
+  unaffected. Defaults to `80` (the stemtools default).
 
 - ink, paper, accent, family:
 
@@ -99,6 +120,9 @@ new_stem_visualize_block(var = "Species", accent = "#35978F")
 #>  $ direction     : num 1
 #>  $ labels        : logi TRUE
 #>  $ label_accuracy: num 1
+#>  $ title_show    : logi FALSE
+#>  $ title_quote   : logi FALSE
+#>  $ title_wrap    : num 80
 #>  $ ink           : chr "black"
 #>  $ paper         : chr "white"
 #>  $ accent        : chr "#35978F"

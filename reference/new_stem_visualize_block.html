@@ -17,7 +17,7 @@ disclosures.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">blockr.stem</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,6 +62,9 @@ disclosures.</p>
 <span>  direction <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  labels <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  label_accuracy <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  title_show <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  title_quote <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  title_wrap <span class="op">=</span> <span class="fl">80</span>,</span>
 <span>  ink <span class="op">=</span> <span class="st">"black"</span>,</span>
 <span>  paper <span class="op">=</span> <span class="st">"white"</span>,</span>
 <span>  accent <span class="op">=</span> <span class="st">"#35978F"</span>,</span>
@@ -98,6 +101,24 @@ default) plots unweighted counts.</p></dd>
 <dt id="arg-palette-direction-labels-label-accuracy">palette, direction, labels, label_accuracy<a class="anchor" aria-label="anchor" href="#arg-palette-direction-labels-label-accuracy"></a></dt>
 <dd><p>Chart styling passed to the
 stemtools function (see <code><a href="new_stem_chart_block.html">new_stem_chart_block()</a></code>).</p></dd>
+
+
+<dt id="arg-title-show">title_show<a class="anchor" aria-label="anchor" href="#arg-title-show"></a></dt>
+<dd><p>If <code>TRUE</code>, draw the plotted variable's label as the chart
+title. Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-title-quote">title_quote<a class="anchor" aria-label="anchor" href="#arg-title-quote"></a></dt>
+<dd><p>If <code>TRUE</code>, wrap the title in typographic quotation marks.
+Only takes effect when <code>title_show</code> is <code>TRUE</code>. Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-title-wrap">title_wrap<a class="anchor" aria-label="anchor" href="#arg-title-wrap"></a></dt>
+<dd><p>Maximum number of characters per title line; longer titles
+are wrapped onto several lines so they do not overflow the plot. Only takes
+effect when <code>title_show</code> is <code>TRUE</code>, and only affects the ggplot-drawn title
+in the PNG/SVG (ggsave) exports - the native PowerPoint chart is unaffected.
+Defaults to <code>80</code> (the stemtools default).</p></dd>
 
 
 <dt id="arg-ink-paper-accent-family">ink, paper, accent, family<a class="anchor" aria-label="anchor" href="#arg-ink-paper-accent-family"></a></dt>
@@ -139,6 +160,9 @@ axis labels (e.g. "0 %" / "100 %") are not clipped. Defaults to 8 mm.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ direction     : num 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ labels        : logi TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ label_accuracy: num 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ title_show    : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ title_quote   : logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ title_wrap    : num 80</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ ink           : chr "black"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ paper         : chr "white"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ accent        : chr "#35978F"</span>

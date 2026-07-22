@@ -58,12 +58,17 @@ mirroring `read_block`: delimited text (`.csv`/`.tsv`/`.txt`/...) with
 [`readr::read_csv()`](https://readr.tidyverse.org/reference/read_delim.html)
 and friends, spreadsheets (`.xlsx`/`.xls`/...) with
 [`readxl::read_excel()`](https://readxl.tidyverse.org/reference/read_excel.html),
-and everything else (`.rds`, `.sav`, `.dta`, `.parquet`, ...) with
-[`rio::import()`](http://gesistsa.github.io/rio/reference/import.md). A
-gear popover next to the file button exposes the format-specific options
-(CSV delimiter/quote/encoding/skip/rows/header; Excel
-sheet/range/skip/rows/ header), shown only for the matching file type -
-just like `read_block`.
+and everything else (`.rds`, `.dta`, `.parquet`, ...) with
+[`rio::import()`](http://gesistsa.github.io/rio/reference/import.md).
+SPSS files (`.sav`/`.zsav`/`.por`) are read with
+[`haven::read_spss()`](https://haven.tidyverse.org/reference/read_spss.html)
+and then passed through
+[`haven::as_factor()`](https://forcats.tidyverse.org/reference/as_factor.html),
+so labelled numeric columns arrive as proper factors rather than numeric
+codes. A gear popover next to the file button exposes the
+format-specific options (CSV delimiter/quote/encoding/skip/rows/header;
+Excel sheet/range/skip/rows/ header), shown only for the matching file
+type - just like `read_block`.
 
 This exists because `blockr.core`'s `filebrowser_block` builds its
 output expression as the bare file path (`bquote(.(file), ...)`) rather

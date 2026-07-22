@@ -19,7 +19,7 @@ the file browser: the user's home directory and the filesystem root."></head><bo
 
     <a class="navbar-brand me-2" href="../index.html">blockr.stem</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,7 +99,10 @@ navigate, passed to <code><a href="https://rdrr.io/pkg/shinyFiles/man/shinyFiles
     <p>The selected file is read with the reader that matches its format, mirroring
 <code>read_block</code>: delimited text (<code>.csv</code>/<code>.tsv</code>/<code>.txt</code>/...) with <code><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">readr::read_csv()</a></code>
 and friends, spreadsheets (<code>.xlsx</code>/<code>.xls</code>/...) with <code><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">readxl::read_excel()</a></code>, and
-everything else (<code>.rds</code>, <code>.sav</code>, <code>.dta</code>, <code>.parquet</code>, ...) with <code><a href="http://gesistsa.github.io/rio/reference/import.html" class="external-link">rio::import()</a></code>.
+everything else (<code>.rds</code>, <code>.dta</code>, <code>.parquet</code>, ...) with <code><a href="http://gesistsa.github.io/rio/reference/import.html" class="external-link">rio::import()</a></code>. SPSS
+files (<code>.sav</code>/<code>.zsav</code>/<code>.por</code>) are read with <code><a href="https://haven.tidyverse.org/reference/read_spss.html" class="external-link">haven::read_spss()</a></code> and then
+passed through <code><a href="https://forcats.tidyverse.org/reference/as_factor.html" class="external-link">haven::as_factor()</a></code>, so labelled numeric columns arrive as
+proper factors rather than numeric codes.
 A gear popover next to the file button exposes the format-specific options
 (CSV delimiter/quote/encoding/skip/rows/header; Excel sheet/range/skip/rows/
 header), shown only for the matching file type - just like <code>read_block</code>.</p>

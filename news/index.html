@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">blockr.stem</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,20 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.3" id="blockrstem-013">blockr.stem 0.1.3<a class="anchor" aria-label="anchor" href="#blockrstem-013"></a></h2>
+<ul><li>
+<p><strong>STEM Visualize</strong> — new chart title options under “Chart options”, all off / at the stemtools defaults so existing charts are unchanged. Requires <code>stemtools (&gt;= 0.1.2)</code>.</p>
+<ul><li>
+<strong>Show title</strong> (<code>title_show</code>) draws the plotted variable’s label as the chart title (rendered bold and left-aligned by <code>theme_stem()</code>).</li>
+<li>
+<strong>Add title quotes</strong> (<code>title_quote</code>) wraps the title in typographic quotation marks.</li>
+<li>
+<strong>Title wrap</strong> (<code>title_wrap</code>) sets the maximum characters per title line so long titles wrap instead of overflowing. Affects the PNG/SVG (ggsave) exports only; the native PowerPoint chart is unaffected.</li>
+</ul></li>
+<li><p><strong>STEM Export</strong> — the title now carries through to every export format. PNG/SVG render it automatically; the native PowerPoint chart reconstructs the title (including its bold face) and left-aligns it to match <code>theme_stem()</code>, by editing the chart OOXML in the written <code>.pptx</code>.</p></li>
+<li><p><strong>STEM Import</strong> — SPSS files (<code>.sav</code>/<code>.zsav</code>/<code>.por</code>) are now read with <code><a href="https://haven.tidyverse.org/reference/read_spss.html" class="external-link">haven::read_spss()</a></code> wrapped in <code><a href="https://forcats.tidyverse.org/reference/as_factor.html" class="external-link">haven::as_factor()</a></code>, so labelled numeric columns arrive as proper factors (with their value labels) rather than the bare numeric codes <code><a href="http://gesistsa.github.io/rio/reference/import.html" class="external-link">rio::import()</a></code> left behind — which is what the downstream survey blocks expect.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="blockrstem-011">blockr.stem 0.1.1<a class="anchor" aria-label="anchor" href="#blockrstem-011"></a></h2>
 <ul><li><p><strong>STEM Export</strong> — the PowerPoint chart preview now renders its text at the same size as the exported native chart. The preview is scaled to match the chart’s data labels (<code>1 / stem_pptx_label_scale</code>), so it no longer shows oversized fonts relative to the downloaded <code>.pptx</code>.</p></li>
