@@ -45,6 +45,66 @@ stem_write_pptx_chart <- function(plot, file, width = NA_real_, height = NA_real
     doc, value = chart, location = stem_pptx_location(width, height)
   )
   print(doc, target = file)
+  # theme_stem() left-aligns the plot title, but mschart emits the chart title
+  # centred with no API to change it; patch the written OOXML to match (only when
+  # there is a title to align).
+  if (!is.null(stem_pptx_title(plot))) {
+    stem_pptx_leftalign_title(file)
+  }
+  invisible(file)
+}
+
+# Left-align the native chart's title inside a written `.pptx`. mschart hardcodes
+# the title paragraph as a bare `<a:pPr>` (which PowerPoint renders centred) and
+# neither chart_labels() nor mschart_theme() exposes its alignment, so we edit the
+# OOXML directly: unzip, inject `algn="l"` into the first `<a:pPr>` of each chart's
+# `<c:title>` block, and rezip. Best-effort - on any error (or if mschart's
+# template changes so the pattern no longer matches) the file is left exactly as
+# officer wrote it, i.e. with a centred title, rather than failing the export.
+stem_pptx_leftalign_title <- function(file) {
+  # Rezipping the patched archive needs zip::zip() (base R can unzip but not
+  # write a zip). Without it, skip the whole rewrite and leave the centred title.
+  if (!requireNamespace("zip", quietly = TRUE)) {
+    return(invisible(file))
+  }
+  tryCatch(
+    {
+      ex <- tempfile()
+      dir.create(ex)
+      on.exit(unlink(ex, recursive = TRUE), add = TRUE)
+      utils::unzip(file, exdir = ex)
+
+      charts <- list.files(
+        file.path(ex, "ppt", "charts"),
+        pattern = "^chart.*\\.xml$", full.names = TRUE
+      )
+      patched <- FALSE
+      for (cf in charts) {
+        x <- paste(readLines(cf, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+        # First `<a:pPr>` inside the `<c:title>` block (dotall + lazy so it spans
+        # the pretty-printed lines and stops at the title's own paragraph). A
+        # no-op when the chart has no title.
+        x2 <- sub("(?s)(<c:title[ >].*?)<a:pPr>", "\\1<a:pPr algn=\"l\">", x, perl = TRUE)
+        if (!identical(x, x2)) {
+          writeLines(x2, cf, useBytes = TRUE)
+          patched <- TRUE
+        }
+      }
+
+      if (patched) {
+        files <- list.files(ex, recursive = TRUE, all.files = TRUE, no.. = TRUE)
+        # Repackage to a temp file first, then swap it in, so a failure mid-zip
+        # can't corrupt the file officer already wrote.
+        newzip <- tempfile(fileext = ".pptx")
+        zip::zip(
+          zipfile = newzip, files = files, root = ex, include_directories = FALSE
+        )
+        file.copy(newzip, file, overwrite = TRUE)
+        unlink(newzip)
+      }
+    },
+    error = function(e) NULL
+  )
   invisible(file)
 }
 
@@ -131,8 +191,13 @@ stem_pptx_chart <- function(plot) {
   chart <- mschart::set_theme(chart, stem_pptx_theme(style, legend_pos))
 
   # theme_stem() draws no axis titles - drop mschart's default ones (the column
-  # names "category" / "value").
-  chart <- mschart::chart_labels(chart, title = NULL, xlab = NULL, ylab = NULL)
+  # names "category" / "value"). Carry over the plot's title (the variable label
+  # stemtools draws when title_show is on) so the native chart shows it too; it
+  # is rendered bold via the theme's main_title (see stem_pptx_theme()). NULL
+  # when the plot has no title, which leaves the chart untitled.
+  chart <- mschart::chart_labels(
+    chart, title = stem_pptx_title(plot), xlab = NULL, ylab = NULL
+  )
 
   # Show the plot's own labels verbatim (the `stem_label` integers, no "%"
   # suffix, blank on segments the plot hides) via mschart's labels-from-cells,
@@ -147,6 +212,15 @@ stem_pptx_chart <- function(plot) {
     stem_pptx_label_text(plot, df, style, label_size)
   )
   chart
+}
+
+# The plot's title (the variable label stemtools draws when title_show is on),
+# read off `plot$labels$title`, or NULL when the plot carries no title. Passed to
+# mschart::chart_labels() so the native chart shows the same title, rendered bold
+# via the theme's main_title (see stem_pptx_theme()).
+stem_pptx_title <- function(plot) {
+  ttl <- plot$labels$title
+  if (is.character(ttl) && length(ttl) == 1L && nzchar(ttl)) ttl else NULL
 }
 
 # The native chart's axis / legend text point size (see stem_pptx_theme()). Also

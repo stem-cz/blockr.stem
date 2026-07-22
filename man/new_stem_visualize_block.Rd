@@ -13,6 +13,9 @@ new_stem_visualize_block(
   direction = 1,
   labels = TRUE,
   label_accuracy = 1,
+  title_show = FALSE,
+  title_quote = FALSE,
+  title_wrap = 80,
   ink = "black",
   paper = "white",
   accent = "#35978F",
@@ -36,6 +39,18 @@ default) plots unweighted counts.}
 
 \item{palette, direction, labels, label_accuracy}{Chart styling passed to the
 stemtools function (see \code{\link[=new_stem_chart_block]{new_stem_chart_block()}}).}
+
+\item{title_show}{If \code{TRUE}, draw the plotted variable's label as the chart
+title. Defaults to \code{FALSE}.}
+
+\item{title_quote}{If \code{TRUE}, wrap the title in typographic quotation marks.
+Only takes effect when \code{title_show} is \code{TRUE}. Defaults to \code{FALSE}.}
+
+\item{title_wrap}{Maximum number of characters per title line; longer titles
+are wrapped onto several lines so they do not overflow the plot. Only takes
+effect when \code{title_show} is \code{TRUE}, and only affects the ggplot-drawn title
+in the PNG/SVG (ggsave) exports - the native PowerPoint chart is unaffected.
+Defaults to \code{80} (the stemtools default).}
 
 \item{ink, paper, accent, family}{Stem theme arguments (see
 \code{\link[=new_theme_stem_block]{new_theme_stem_block()}} and \code{\link[stemtools:theme_stem]{stemtools::theme_stem()}}).}

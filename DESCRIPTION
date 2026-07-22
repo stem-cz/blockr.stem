@@ -1,6 +1,6 @@
 Package: blockr.stem
 Title: Stem Theme Block for blockr
-Version: 0.1.1
+Version: 0.1.3
 Authors@R:
     person("Aleš", "Vomáčka", role = c("aut", "cre"),
            email = "ales.vomacka@stem.cz")
@@ -9,18 +9,20 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports:
-    blockr.core,
-    blockr.ggplot,
+    blockr.core (>= 0.1.4),
+    blockr.ggplot (>= 0.1.1.9001),
     colourpicker,
     DT,
     ggplot2,
+    haven,
     readr,
     readxl,
     rio,
     shiny,
     shinyFiles,
-    stemtools
+    stemtools (>= 0.1.2)
 Suggests:
+    blockr.dock (>= 0.1.3),
     jsonlite,
     mschart,
     officer,
@@ -28,9 +30,13 @@ Suggests:
     rlang,
     svglite,
     testthat (>= 3.0.0),
-    withr
+    withr,
+    zip
 Remotes:
-    stem-cz/stemtools
+    stem-cz/stemtools,
+    BristolMyersSquibb/blockr.core,
+    BristolMyersSquibb/blockr.ggplot,
+    BristolMyersSquibb/blockr.dock
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0
 URL: https://stem-cz.github.io/blockr.stem/

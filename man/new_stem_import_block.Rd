@@ -44,7 +44,10 @@ the file browser: the user's home directory and the filesystem root.
 The selected file is read with the reader that matches its format, mirroring
 \code{read_block}: delimited text (\code{.csv}/\code{.tsv}/\code{.txt}/...) with \code{\link[readr:read_csv]{readr::read_csv()}}
 and friends, spreadsheets (\code{.xlsx}/\code{.xls}/...) with \code{\link[readxl:read_excel]{readxl::read_excel()}}, and
-everything else (\code{.rds}, \code{.sav}, \code{.dta}, \code{.parquet}, ...) with \code{\link[rio:import]{rio::import()}}.
+everything else (\code{.rds}, \code{.dta}, \code{.parquet}, ...) with \code{\link[rio:import]{rio::import()}}. SPSS
+files (\code{.sav}/\code{.zsav}/\code{.por}) are read with \code{\link[haven:read_spss]{haven::read_spss()}} and then
+passed through \code{\link[haven:as_factor]{haven::as_factor()}}, so labelled numeric columns arrive as
+proper factors rather than numeric codes.
 A gear popover next to the file button exposes the format-specific options
 (CSV delimiter/quote/encoding/skip/rows/header; Excel sheet/range/skip/rows/
 header), shown only for the matching file type - just like \code{read_block}.

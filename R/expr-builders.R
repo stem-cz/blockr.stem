@@ -36,7 +36,9 @@ has_col <- function(x) is.character(x) && length(x) == 1L && nzchar(x)
 # new_stem_chart_block() and new_stem_visualize_block().
 stem_plot_expr <- function(item, type = "barplot", weight = NULL, group = NULL,
                            palette = "div1", direction = 1, labels = TRUE,
-                           label_accuracy = 1, label_size = NA_real_) {
+                           label_accuracy = 1, label_size = NA_real_,
+                           title_show = FALSE, title_quote = FALSE,
+                           title_wrap = 80) {
   fun <- if (identical(type, "inline")) {
     quote(stemtools::stem_inline)
   } else {
@@ -59,6 +61,23 @@ stem_plot_expr <- function(item, type = "barplot", weight = NULL, group = NULL,
   args[["direction"]] <- direction
   args[["labels"]] <- labels
   args[["label_accuracy"]] <- label_accuracy
+  # The title (the variable's label) is drawn by stemtools when title_show is on;
+  # title_quote wraps it in typographic quotes. Both default off (the stemtools
+  # default), so only emit them when set to keep the generated call tidy.
+  # title_wrap sets the max characters per title line (stemtools wraps longer
+  # titles onto several lines so they don't overflow); it only affects the
+  # ggplot-drawn title, i.e. the PNG/SVG (ggsave) exports - the native
+  # PowerPoint chart rebuilds its own title and ignores it. Only meaningful when
+  # the title is shown, and only emit when it differs from the stemtools default
+  # of 80 to keep the generated call tidy.
+  if (isTRUE(title_show)) {
+    args[["title_show"]] <- TRUE
+    if (isTRUE(title_quote)) args[["title_quote"]] <- TRUE
+    if (length(title_wrap) == 1L && !is.na(title_wrap) &&
+        !identical(as.numeric(title_wrap), 80)) {
+      args[["title_wrap"]] <- title_wrap
+    }
+  }
 
   plot_call <- as.call(c(list(fun), args))
 

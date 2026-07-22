@@ -1,3 +1,27 @@
+# blockr.stem 0.1.3
+
+* **STEM Visualize** — new chart title options under "Chart options", all off /
+  at the stemtools defaults so existing charts are unchanged. Requires
+  `stemtools (>= 0.1.2)`.
+  * **Show title** (`title_show`) draws the plotted variable's label as the
+    chart title (rendered bold and left-aligned by `theme_stem()`).
+  * **Add title quotes** (`title_quote`) wraps the title in typographic
+    quotation marks.
+  * **Title wrap** (`title_wrap`) sets the maximum characters per title line so
+    long titles wrap instead of overflowing. Affects the PNG/SVG (ggsave)
+    exports only; the native PowerPoint chart is unaffected.
+
+* **STEM Export** — the title now carries through to every export format. PNG/SVG
+  render it automatically; the native PowerPoint chart reconstructs the title
+  (including its bold face) and left-aligns it to match `theme_stem()`, by
+  editing the chart OOXML in the written `.pptx`.
+
+* **STEM Import** — SPSS files (`.sav`/`.zsav`/`.por`) are now read with
+  `haven::read_spss()` wrapped in `haven::as_factor()`, so labelled numeric
+  columns arrive as proper factors (with their value labels) rather than the
+  bare numeric codes `rio::import()` left behind — which is what the downstream
+  survey blocks expect.
+
 # blockr.stem 0.1.1
 
 * **STEM Export** — the PowerPoint chart preview now renders its text at the same

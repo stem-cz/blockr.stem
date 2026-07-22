@@ -16,6 +16,15 @@
 #'   `NA` keeps the stemtools default.
 #' @param palette,direction,labels,label_accuracy Chart styling passed to the
 #'   stemtools function (see [new_stem_chart_block()]).
+#' @param title_show If `TRUE`, draw the plotted variable's label as the chart
+#'   title. Defaults to `FALSE`.
+#' @param title_quote If `TRUE`, wrap the title in typographic quotation marks.
+#'   Only takes effect when `title_show` is `TRUE`. Defaults to `FALSE`.
+#' @param title_wrap Maximum number of characters per title line; longer titles
+#'   are wrapped onto several lines so they do not overflow the plot. Only takes
+#'   effect when `title_show` is `TRUE`, and only affects the ggplot-drawn title
+#'   in the PNG/SVG (ggsave) exports - the native PowerPoint chart is unaffected.
+#'   Defaults to `80` (the stemtools default).
 #' @param ink,paper,accent,family Stem theme arguments (see
 #'   [new_theme_stem_block()] and [stemtools::theme_stem()]).
 #' @param font_size Base text size in points for the axis/legend/title text.
@@ -37,6 +46,8 @@ new_stem_visualize_block <- function(var = character(),
                                      weight = character(), label_size = 14,
                                      palette = "div1", direction = 1,
                                      labels = TRUE, label_accuracy = 1,
+                                     title_show = FALSE, title_quote = FALSE,
+                                     title_wrap = 80,
                                      ink = "black", paper = "white",
                                      accent = "#35978F", family = "Calibri",
                                      font_size = NA_real_,
@@ -57,6 +68,9 @@ new_stem_visualize_block <- function(var = character(),
         r_direction <- reactiveVal(direction)
         r_labels <- reactiveVal(labels)
         r_label_accuracy <- reactiveVal(label_accuracy)
+        r_title_show <- reactiveVal(title_show)
+        r_title_quote <- reactiveVal(title_quote)
+        r_title_wrap <- reactiveVal(title_wrap)
         # theme state
         r_ink <- reactiveVal(ink)
         r_paper <- reactiveVal(paper)
@@ -78,6 +92,12 @@ new_stem_visualize_block <- function(var = character(),
         observeEvent(input$direction, r_direction(as.numeric(input$direction)))
         observeEvent(input$labels, r_labels(isTRUE(input$labels)))
         observeEvent(input$label_accuracy, r_label_accuracy(as.numeric(input$label_accuracy)))
+        observeEvent(input$title_show, r_title_show(isTRUE(input$title_show)))
+        observeEvent(input$title_quote, r_title_quote(isTRUE(input$title_quote)))
+        # A cleared numericInput yields NA (not NULL), so keep the default
+        # ignoreNULL = TRUE: NULL only occurs at init/teardown and would clobber
+        # the starting value.
+        observeEvent(input$title_wrap, r_title_wrap(input$title_wrap))
         observeEvent(input$ink, r_ink(input$ink %||% "black"), ignoreNULL = FALSE)
         observeEvent(input$paper, r_paper(input$paper %||% "white"), ignoreNULL = FALSE)
         observeEvent(input$accent, r_accent(input$accent %||% "#35978F"), ignoreNULL = FALSE)
@@ -131,7 +151,10 @@ new_stem_visualize_block <- function(var = character(),
               direction = r_direction(),
               labels = r_labels(),
               label_accuracy = r_label_accuracy(),
-              label_size = r_label_size()
+              label_size = r_label_size(),
+              title_show = r_title_show(),
+              title_quote = r_title_quote(),
+              title_wrap = r_title_wrap()
             )
             stem_theme_expr(
               base = plot,
@@ -152,6 +175,9 @@ new_stem_visualize_block <- function(var = character(),
             direction = r_direction,
             labels = r_labels,
             label_accuracy = r_label_accuracy,
+            title_show = r_title_show,
+            title_quote = r_title_quote,
+            title_wrap = r_title_wrap,
             ink = r_ink,
             paper = r_paper,
             accent = r_accent,
@@ -210,6 +236,17 @@ new_stem_visualize_block <- function(var = character(),
               NS(id, "label_accuracy"), "Label accuracy",
               choices = c("Whole numbers" = "1", "One decimal" = "0.1"),
               selected = as.character(label_accuracy)
+            ),
+            # Title = the plotted variable's label (attr(x, "label")); off by
+            # default. "Add title quotes" wraps it in typographic quotes and only
+            # matters when the title is shown.
+            checkboxInput(NS(id, "title_show"), "Show title", value = title_show),
+            checkboxInput(NS(id, "title_quote"), "Add title quotes", value = title_quote),
+            # Wrap width for the title: only affects the ggplot-drawn title in the
+            # PNG/SVG (ggsave) exports; the native PowerPoint chart is unaffected.
+            numericInput(
+              NS(id, "title_wrap"), "Title wrap (characters, PNG/SVG only)",
+              value = title_wrap, min = 1, step = 1
             )
           )
         ),
@@ -244,7 +281,7 @@ new_stem_visualize_block <- function(var = character(),
     class = "stem_visualize_block",
     # Optional/NA-able fields must be allowed empty or the block gates on
     # "waiting for its inputs to be set".
-    allow_empty_state = c("var", "weight", "label_size", "family", "font_size", "padding"),
+    allow_empty_state = c("var", "weight", "label_size", "family", "font_size", "padding", "title_wrap"),
     expr_type = "bquoted",
     ...
   )

@@ -289,6 +289,41 @@ test_that("stem_pptx_location fills the slide by default, centres a fixed size",
   expect_equal(fixed$left, (10 - 16 / 2.54) / 2) # centred on a 10in slide
 })
 
+test_that("native chart carries the plot's title, rendered bold", {
+  skip_if_not_installed("stemtools")
+  skip_if_not_installed("mschart")
+  skip_if_not_installed("officer")
+
+  read_chart_xml <- function(f) {
+    parts <- utils::unzip(f, list = TRUE)$Name
+    part <- grep("ppt/charts/chart.*\\.xml$", parts, value = TRUE)[1]
+    paste(readLines(unz(f, part), warn = FALSE), collapse = "")
+  }
+
+  df <- data.frame(g = factor(rep(c("a", "b", "c"), 4)))
+  attr(df$g, "label") <- "Do you like R?"
+
+  # Title on -> it appears in a bold <c:title> block.
+  p <- stemtools::stem_barplot(df, g, title_show = TRUE) + stemtools::theme_stem()
+  expect_equal(stem_pptx_title(p), "Do you like R?")
+
+  f <- withr::local_tempfile(fileext = ".pptx")
+  stem_write_pptx_chart(p, f)
+  xml <- read_chart_xml(f)
+  title <- regmatches(xml, regexpr("<c:title[ >].*?</c:title>", xml))
+  expect_match(title, "Do you like R\\?")
+  expect_match(title, "b=\"1\"") # bold, via the theme's main_title
+  # left-aligned to match theme_stem() (patched into the title's <a:pPr>).
+  expect_match(title, "<a:pPr algn=\"l\"")
+
+  # Title off -> no title helper value, no title text in the chart.
+  p_off <- stemtools::stem_barplot(df, g) + stemtools::theme_stem()
+  expect_null(stem_pptx_title(p_off))
+  f2 <- withr::local_tempfile(fileext = ".pptx")
+  stem_write_pptx_chart(p_off, f2)
+  expect_no_match(read_chart_xml(f2), "Do you like R")
+})
+
 test_that("stem_write_pptx_chart rejects a plot it can't reconstruct", {
   skip_if_not_installed("mschart")
   skip_if_not_installed("officer")

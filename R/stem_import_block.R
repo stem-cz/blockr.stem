@@ -9,7 +9,10 @@
 #' The selected file is read with the reader that matches its format, mirroring
 #' `read_block`: delimited text (`.csv`/`.tsv`/`.txt`/...) with [readr::read_csv()]
 #' and friends, spreadsheets (`.xlsx`/`.xls`/...) with [readxl::read_excel()], and
-#' everything else (`.rds`, `.sav`, `.dta`, `.parquet`, ...) with [rio::import()].
+#' everything else (`.rds`, `.dta`, `.parquet`, ...) with [rio::import()]. SPSS
+#' files (`.sav`/`.zsav`/`.por`) are read with [haven::read_spss()] and then
+#' passed through [haven::as_factor()], so labelled numeric columns arrive as
+#' proper factors rather than numeric codes.
 #' A gear popover next to the file button exposes the format-specific options
 #' (CSV delimiter/quote/encoding/skip/rows/header; Excel sheet/range/skip/rows/
 #' header), shown only for the matching file type - just like `read_block`.

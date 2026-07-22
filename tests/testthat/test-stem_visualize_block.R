@@ -49,6 +49,43 @@ test_that("weight and base font size flow into the combined expression", {
   )
 })
 
+test_that("title controls default off and flow into the expression and state", {
+  blk <- new_stem_visualize_block()
+  df <- data.frame(g = factor(c("a", "b", "a")))
+  data_input <- reactive(df)
+
+  testServer(
+    function(id) blockr.core::expr_server(blk, list(data = data_input)),
+    {
+      session$setInputs(var = "g")
+      # Off by default: no title args in the emitted call.
+      expect_false(session$returned$state$title_show())
+      expect_false(session$returned$state$title_quote())
+      expect_no_match(
+        paste(deparse(session$returned$expr()), collapse = " "), "title_show"
+      )
+
+      # Turning both on tracks in state and surfaces in the call.
+      session$setInputs(title_show = TRUE, title_quote = TRUE)
+      expect_true(session$returned$state$title_show())
+      expect_true(session$returned$state$title_quote())
+      code <- paste(deparse(session$returned$expr()), collapse = " ")
+      expect_match(code, "title_show = TRUE")
+      expect_match(code, "title_quote = TRUE")
+
+      # Default wrap (80) is not emitted; a non-default wrap tracks in state and
+      # surfaces in the call.
+      expect_equal(session$returned$state$title_wrap(), 80)
+      expect_no_match(code, "title_wrap")
+      session$setInputs(title_wrap = 40)
+      expect_equal(session$returned$state$title_wrap(), 40)
+      expect_match(
+        paste(deparse(session$returned$expr()), collapse = " "), "title_wrap = 40"
+      )
+    }
+  )
+})
+
 test_that("combined expression evaluates to a themed ggplot", {
   blk <- new_stem_visualize_block()
   df <- data.frame(g = factor(rep(c("a", "b", "c"), 4)), w = runif(12, 1, 3))

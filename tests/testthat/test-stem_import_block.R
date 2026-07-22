@@ -66,6 +66,26 @@ test_that("stem_read_expr dispatches on file extension", {
 
   xlsx <- stem_read_expr("/a/b.xlsx")
   expect_match(paste(deparse(xlsx), collapse = " "), "readxl::read_excel")
+
+  # SPSS files are read via rio and converted from labelled numerics to factors.
+  sav <- stem_read_expr("/a/b.sav")
+  sav_code <- paste(deparse(sav), collapse = " ")
+  expect_match(sav_code, "haven::read_spss")
+  expect_match(sav_code, "haven::as_factor")
+})
+
+test_that("SPSS import converts labelled columns to factors", {
+  skip_if_not_installed("haven")
+
+  df <- data.frame(q1 = c(1, 2, 1), stringsAsFactors = FALSE)
+  df$q1 <- haven::labelled(df$q1, labels = c(No = 1, Yes = 2))
+  path <- withr::local_tempfile(fileext = ".sav")
+  haven::write_sav(df, path)
+
+  out <- eval(stem_read_expr(normalizePath(path)))
+  expect_s3_class(out, "data.frame")
+  expect_s3_class(out$q1, "factor")
+  expect_identical(as.character(out$q1), c("No", "Yes", "No"))
 })
 
 test_that("CSV options flow from the gear popover into the read expression", {
