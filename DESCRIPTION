@@ -36,9 +36,9 @@ Suggests:
 Remotes:
     alesvomacka/spreadview,
     stem-cz/stemtools,
-    BristolMyersSquibb/blockr.core,
-    BristolMyersSquibb/blockr.ggplot,
-    BristolMyersSquibb/blockr.dock
+    BristolMyersSquibb/blockr.core@2492d0818e5bc164fc8dae14b041e6850398b24e,
+    BristolMyersSquibb/blockr.ggplot@522d986ff573d6d9892fcd581177c72056b82b44,
+    BristolMyersSquibb/blockr.dock@8bad10e3773a9f341552524b369dddf366f0959a
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0
 URL: https://stem-cz.github.io/blockr.stem/
