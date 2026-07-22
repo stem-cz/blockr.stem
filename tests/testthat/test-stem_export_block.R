@@ -198,6 +198,37 @@ test_that("stem_write_pptx_chart writes a native, editable Office chart", {
   expect_true(file.exists(f3) && file.info(f3)$size > 0)
 })
 
+test_that("native chart carries the plot's white bar outline (the segment gaps)", {
+  skip_if_not_installed("stemtools")
+  skip_if_not_installed("mschart")
+  skip_if_not_installed("officer")
+
+  df <- data.frame(
+    g = factor(rep(c("a", "b", "c"), 4)),
+    grp = factor(rep(c("x", "y"), each = 6))
+  )
+
+  # stemtools draws each bar with colour = "white"; the helper recovers that
+  # outline (colour + a positive width in points) so the native chart shows the
+  # same gaps between stacked segments.
+  p <- stemtools::stem_barplot(df, g, group = grp)
+  pd <- stem_pptx_chart_data(p)
+  st <- stem_pptx_series_strokes(p, pd, "series")
+  expect_true(all(toupper(st$values) == "#FFFFFF" | tolower(st$values) == "white"))
+  expect_true(is.numeric(st$width) && st$width > 0)
+
+  # It reaches the written OOXML as a white series line (<a:ln> solidFill).
+  read_chart_xml <- function(f) {
+    parts <- utils::unzip(f, list = TRUE)$Name
+    part <- grep("ppt/charts/chart.*\\.xml$", parts, value = TRUE)[1]
+    paste(readLines(unz(f, part), warn = FALSE), collapse = "")
+  }
+  f <- withr::local_tempfile(fileext = ".pptx")
+  stem_write_pptx_chart(p, f)
+  xml <- read_chart_xml(f)
+  expect_match(xml, "<a:ln[^>]*>\\s*<a:solidFill>\\s*<a:srgbClr val=\"FFFFFF\"")
+})
+
 test_that("native chart inherits the Stem theme (top legend, font, small labels)", {
   skip_if_not_installed("stemtools")
   skip_if_not_installed("mschart")

@@ -161,6 +161,14 @@ stem_pptx_chart <- function(plot) {
     )
     fills <- stem_pptx_series_fills(plot, df, "series")
     if (!is.null(fills)) chart <- mschart::chart_data_fill(chart, values = fills)
+    # stemtools draws a white outline (`colour = "white"`) around each bar,
+    # producing the thin gaps between stacked segments; carry it over so the
+    # native chart shows the same separators.
+    strokes <- stem_pptx_series_strokes(plot, df, "series")
+    if (!is.null(strokes)) {
+      chart <- mschart::chart_data_stroke(chart, values = strokes$values)
+      chart <- mschart::chart_data_line_width(chart, values = strokes$width)
+    }
     # A stacked chart needs its legend to read the series; put it on top like
     # theme_stem() does. A single-series (ungrouped) chart has no useful legend.
     legend_pos <- style$legend
@@ -179,6 +187,12 @@ stem_pptx_chart <- function(plot) {
     )
     fills <- stem_pptx_series_fills(plot, df, "category")
     if (!is.null(fills)) chart <- mschart::chart_data_fill(chart, values = unname(fills[1]))
+    # Same white bar outline as the grouped case (see above); one series here.
+    strokes <- stem_pptx_series_strokes(plot, df, "category")
+    if (!is.null(strokes)) {
+      chart <- mschart::chart_data_stroke(chart, values = unname(strokes$values[1]))
+      chart <- mschart::chart_data_line_width(chart, values = strokes$width)
+    }
     legend_pos <- "n"
     label_pos <- "outEnd"
     # Category proportions (data-driven max); 10% steps like the plot.
@@ -408,4 +422,28 @@ stem_pptx_series_fills <- function(plot, df, key) {
     return(NULL)
   }
   stats::setNames(cols, lv)
+}
+
+# Recover the per-series bar OUTLINE stemtools draws (`colour = "white"`), so the
+# native chart reproduces the thin white gaps between stacked segments. Pairs the
+# built layer's `colour`/`linewidth` to `df` rows exactly like the fill helper.
+# Returns list(values = named colour vector, width = points) or NULL when the
+# plot draws no outline (colour NA) or the colours can't be paired.
+stem_pptx_series_strokes <- function(plot, df, key) {
+  bd <- tryCatch(ggplot2::ggplot_build(plot)$data[[1L]], error = function(e) NULL)
+  if (is.null(bd) || is.null(bd$colour) || nrow(bd) != nrow(df)) {
+    return(NULL)
+  }
+  lv <- levels(df[[key]])
+  idx <- match(lv, as.character(df[[key]]))
+  cols <- bd$colour[idx]
+  if (anyNA(cols)) {
+    return(NULL)
+  }
+  # ggplot linewidth is in mm; mschart wants points (`.pt` = pt-per-mm). Bars
+  # share one linewidth, so a single representative value is enough; fall back to
+  # geom_col's 0.5mm default when the layer carries none.
+  lw <- if (!is.null(bd$linewidth)) stats::median(bd$linewidth[idx], na.rm = TRUE) else NA_real_
+  if (!is.finite(lw) || lw <= 0) lw <- 0.5
+  list(values = stats::setNames(cols, lv), width = lw * ggplot2::.pt)
 }
