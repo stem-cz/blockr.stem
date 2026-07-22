@@ -6,3 +6,8 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^HANDOFF-blockr-pinning\.md$
+^rproject\.toml$
+^rv\.lock$
+^rv$
+^\.Rprofile$

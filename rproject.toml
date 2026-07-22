@@ -1,0 +1,47 @@
+[project]
+name = "blockr.stem"
+r_version = "4.6"
+
+# Order matters: rv tries each repository in turn. PPM gives binary builds of
+# CRAN packages (incl. dockViewR 0.3.0) for fast, reproducible installs.
+repositories = [
+    { alias = "PPM", url = "https://packagemanager.posit.co/cran/latest" },
+]
+
+# The blockr stack is pinned to known-good commits. This is the single source of
+# truth for the reproducible dev/demo environment (see HANDOFF-blockr-pinning.md).
+# `rv sync` freezes exactly these into rv.lock; nothing installed elsewhere on the
+# machine can leak in, and upstream GitHub HEAD churn cannot silently move them.
+dependencies = [
+    # blockr.stem's own Imports + Suggests, read straight from ./DESCRIPTION.
+    # dependencies_only: we develop this package here, we don't install it.
+    { name = "blockr.stem", path = ".", dependencies_only = true, install_suggestions = true },
+
+    # Upstream stack, pinned. These explicit commit pins OVERRIDE the bare
+    # `Remotes: BristolMyersSquibb/blockr.core` (= main HEAD) that
+    # blockr.dock/dplyr/ggplot/io carry -- the exact conflict that made pak's
+    # solver unable to install the set.
+    { name = "blockr.core",   git = "https://github.com/BristolMyersSquibb/blockr.core",   commit = "2492d08" },
+    { name = "blockr.ggplot", git = "https://github.com/BristolMyersSquibb/blockr.ggplot", commit = "522d986" },
+    { name = "blockr.dock",   git = "https://github.com/BristolMyersSquibb/blockr.dock",   commit = "8bad10e" },
+    { name = "blockr.dplyr",  git = "https://github.com/BristolMyersSquibb/blockr.dplyr",  commit = "43d92f5" },
+    { name = "blockr.io",     git = "https://github.com/BristolMyersSquibb/blockr.io",     commit = "d79a65f" },
+    { name = "blockr",        git = "https://github.com/BristolMyersSquibb/blockr",        commit = "17b7cb5" },
+    { name = "stemtools",     git = "https://github.com/stem-cz/stemtools",                commit = "8b4343c" },
+    { name = "spreadview",    git = "https://github.com/alesvomacka/spreadview",           commit = "9658eb8" },
+
+    # Dev tools. Needed explicitly because `rv sync` makes the project library
+    # EXACTLY the lockfile -- nothing leaks in from the user library.
+    "devtools",
+    "roxygen2",
+    "pkgdown",
+]
+
+# dockViewR 0.3.0 is the linchpin: 0.4.0 breaks blockr.dock panel placement
+# (black background, blank panels). blockr.dock @ 8bad10e only needs (>= 0.2.1),
+# so PPM's 0.3.0 satisfies it. Forcing dockViewR from the repository guarantees
+# no upstream `Remotes` branch (e.g. cynkra/dockViewR@95-panel-mount-event) can
+# ever pull 0.4.0 in transitively.
+prefer_repositories_for = [
+    "dockViewR",
+]
