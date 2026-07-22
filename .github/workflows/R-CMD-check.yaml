@@ -46,5 +46,11 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
         with:
+          # The blockr.* deps are installed from their GitHub HEADs (see
+          # DESCRIPTION Remotes), which currently emit upstream deprecation
+          # warnings (e.g. `new_block_args()`) from register_blocks() at load
+          # time. Those are upstream churn, not defects here, so fail only on
+          # actual ERRORs rather than the default "warning".
+          error-on: '"error"'
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
