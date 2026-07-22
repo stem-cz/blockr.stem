@@ -21,15 +21,19 @@ This is a standard R package with roxygen2 docs and testthat (edition
 3). There is no build system beyond R/devtools; run these from an R
 session at the repo root (e.g. `R -q -e '<expr>'`):
 
-- **Run all tests:** `devtools::test()`
+- **Run all tests:**
+  [`devtools::test()`](https://devtools.r-lib.org/reference/test.html)
 - **Run one test file:** `devtools::test(filter = "expr-builders")`
   (matches `tests/testthat/test-expr-builders.R`; the filter is the name
   after `test-`)
 - **Regenerate docs + NAMESPACE after changing roxygen `@` tags or
-  exports:** `devtools::document()` — the `NAMESPACE` and `man/*.Rd` are
-  generated; never hand-edit them.
-- **Full package check:** `devtools::check()`
-- **Load for interactive work:** `devtools::load_all()`
+  exports:**
+  [`devtools::document()`](https://devtools.r-lib.org/reference/document.html)
+  — the `NAMESPACE` and `man/*.Rd` are generated; never hand-edit them.
+- **Full package check:**
+  [`devtools::check()`](https://devtools.r-lib.org/reference/check.html)
+- **Load for interactive work:**
+  [`devtools::load_all()`](https://devtools.r-lib.org/reference/load_all.html)
 
 An MCP server (`r-btw` / `r-mcptools`) is available for driving a live R
 session and has dedicated tools (`btw_tool_pkg_test`,

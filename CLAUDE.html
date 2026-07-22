@@ -42,17 +42,17 @@
 <h2 id="common-commands">Common commands<a class="anchor" aria-label="anchor" href="#common-commands"></a></h2>
 <p>This is a standard R package with roxygen2 docs and testthat (edition 3). There is no build system beyond R/devtools; run these from an R session at the repo root (e.g. <code>R -q -e '&lt;expr&gt;'</code>):</p>
 <ul><li>
-<strong>Run all tests:</strong> <code>devtools::test()</code>
+<strong>Run all tests:</strong> <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code>
 </li>
 <li>
 <strong>Run one test file:</strong> <code>devtools::test(filter = "expr-builders")</code> (matches <code>tests/testthat/test-expr-builders.R</code>; the filter is the name after <code>test-</code>)</li>
 <li>
-<strong>Regenerate docs + NAMESPACE after changing roxygen <code>@</code> tags or exports:</strong> <code>devtools::document()</code> — the <code>NAMESPACE</code> and <code>man/*.Rd</code> are generated; never hand-edit them.</li>
+<strong>Regenerate docs + NAMESPACE after changing roxygen <code>@</code> tags or exports:</strong> <code><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">devtools::document()</a></code> — the <code>NAMESPACE</code> and <code>man/*.Rd</code> are generated; never hand-edit them.</li>
 <li>
-<strong>Full package check:</strong> <code>devtools::check()</code>
+<strong>Full package check:</strong> <code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code>
 </li>
 <li>
-<strong>Load for interactive work:</strong> <code>devtools::load_all()</code>
+<strong>Load for interactive work:</strong> <code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code>
 </li>
 </ul><p>An MCP server (<code>r-btw</code> / <code>r-mcptools</code>) is available for driving a live R session and has dedicated tools (<code>btw_tool_pkg_test</code>, <code>btw_tool_pkg_document</code>, <code>btw_tool_pkg_check</code>, <code>btw_tool_pkg_load_all</code>) — prefer these when an R session is already running.</p>
 </div>
