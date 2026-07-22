@@ -11,14 +11,21 @@
 - [`new_stem_import_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_import_block.md)
   [`stem_import_volumes()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_import_block.md)
   : STEM Import block
+- [`new_stem_spreadsheet_export_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_spreadsheet_export_block.md)
+  [`block_output(`*`<stem_spreadsheet_export_block>`*`)`](https://stem-cz.github.io/blockr.stem/reference/new_stem_spreadsheet_export_block.md)
+  : STEM Excel Export block
 - [`new_stem_var_selector_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_var_selector_block.md)
   [`block_output(`*`<stem_var_selector_block>`*`)`](https://stem-cz.github.io/blockr.stem/reference/new_stem_var_selector_block.md)
   : STEM Variable Selector block
+- [`new_stem_visualize_battery_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_visualize_battery_block.md)
+  : STEM Visualize battery block
 - [`new_stem_visualize_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_visualize_block.md)
   : STEM Visualize block
 - [`new_theme_stem_block()`](https://stem-cz.github.io/blockr.stem/reference/new_theme_stem_block.md)
   : Theme STEM block
 - [`set_label_size()`](https://stem-cz.github.io/blockr.stem/reference/set_label_size.md)
   : Resize a plot's data labels
+- [`stem_battery_plot()`](https://stem-cz.github.io/blockr.stem/reference/stem_battery_plot.md)
+  : Plot a battery of same-scale items, with level validation
 - [`stem_write_pptx_chart()`](https://stem-cz.github.io/blockr.stem/reference/stem_write_pptx_chart.md)
   : Export a STEM plot as a native, editable PowerPoint chart
