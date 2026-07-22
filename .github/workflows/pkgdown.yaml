@@ -1,5 +1,5 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
-# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# Build & deploy the pkgdown site against the PINNED blockr stack (rv), so the
+# docs match the versions the package is actually developed against.
 on:
   push:
     branches: [main, master]
@@ -28,15 +28,20 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
-
-      - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
-          needs: website
+          # Must match `r_version` in rproject.toml so rv resolves the locked stack.
+          r-version: '4.6'
+
+      - name: Install rv
+        uses: a2-ai/setup-rv@v1.0.0
+
+      - name: Install pinned dependencies (exactly rv.lock)
+        run: rv sync --locked
 
       - name: Build site
-        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
-        shell: Rscript {0}
+        # install = FALSE: pkgdown loads blockr.stem from source (pkgload) against
+        # the rv library. rv run puts that library on the search path.
+        run: rv run --no-sync -e 'pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)'
 
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'

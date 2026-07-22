@@ -1,5 +1,10 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
-# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# R CMD check against the PINNED blockr stack, installed with rv.
+#
+# The dependency versions come from rv.lock (frozen commits, see rproject.toml).
+# This is deliberately NOT the r-lib `setup-r-dependencies` flow, which installs
+# the blockr.* Remotes from their GitHub HEADs and drifts. Here
+# `rv sync --locked` reproduces exactly the stack we develop and demo against,
+# so CI and local agree.
 on:
   push:
     branches: [main, master]
@@ -11,19 +16,8 @@ permissions: read-all
 
 jobs:
   R-CMD-check:
-    runs-on: ${{ matrix.config.os }}
-
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
-
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - {os: macos-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
+    runs-on: ubuntu-latest
+    name: ubuntu-latest (pinned via rv)
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -36,21 +30,17 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
+          # Must match `r_version` in rproject.toml so rv resolves the locked stack.
+          r-version: '4.6'
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rcmdcheck
-          needs: check
+      - name: Install rv
+        uses: a2-ai/setup-rv@v1.0.0
 
-      - uses: r-lib/actions/check-r-package@v2
-        with:
-          # The blockr.* deps are installed from their GitHub HEADs (see
-          # DESCRIPTION Remotes), which currently emit upstream deprecation
-          # warnings (e.g. `new_block_args()`) from register_blocks() at load
-          # time. Those are upstream churn, not defects here, so fail only on
-          # actual ERRORs rather than the default "warning".
-          error-on: '"error"'
-          upload-snapshots: true
-          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+      - name: Install pinned dependencies (exactly rv.lock)
+        # --locked fails if rproject.toml and rv.lock have drifted apart.
+        run: rv sync --locked
+
+      - name: R CMD check against the pinned library
+        # --no-sync: run against exactly what the previous step installed.
+        # rv run puts the project library on the check subprocess's search path.
+        run: rv run --no-sync -e 'rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "note")'
