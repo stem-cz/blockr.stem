@@ -38,9 +38,13 @@ jobs:
       - name: Install pinned dependencies (exactly rv.lock)
         run: rv sync --locked
 
+      - name: Install blockr.stem into the pinned library
+        # pkgdown's build_reference() runs examples via library(blockr.stem), so
+        # the package must be installed (rproject.toml only installs its deps).
+        # rv run puts the pinned library first on .libPaths(), so it lands there.
+        run: rv run --no-sync -e 'install.packages(".", repos = NULL, type = "source")'
+
       - name: Build site
-        # install = FALSE: pkgdown loads blockr.stem from source (pkgload) against
-        # the rv library. rv run puts that library on the search path.
         run: rv run --no-sync -e 'pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)'
 
       - name: Deploy to GitHub pages 🚀
