@@ -60,6 +60,19 @@
     overwrite = TRUE
   )
   blockr.core::register_blocks(
+    "new_stem_export_plot_battery_block",
+    name = "STEM Export (chart/battery)",
+    description = paste(
+      "Preview and download a STEM Visualize chart or a STEM Visualize battery",
+      "plot (chosen with a toggle) as PNG, SVG or a native PowerPoint chart;",
+      "a two-input variant of STEM Export"
+    ),
+    category = "output",
+    icon = "box-arrow-down",
+    package = pkgname,
+    overwrite = TRUE
+  )
+  blockr.core::register_blocks(
     "new_stem_spreadsheet_export_block",
     name = "STEM Excel Export",
     description = paste(

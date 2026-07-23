@@ -24,6 +24,33 @@ test_that("stem_spread_cat_choices labels each variable with its category count"
   expect_false("n" %in% unname(choices2))
 })
 
+test_that("stem_spread_cat_choices tolerates NULL / empty data", {
+  # Upstream data is NULL until a source block produces it (e.g. STEM Import
+  # before a file is chosen); the block's startup observer calls this on data(),
+  # so it must return no choices rather than erroring on setNames(NULL, ...)
+  # ("attempt to set an attribute on NULL"). Mirrors stem_weight_choices().
+  expect_identical(stem_spread_cat_choices(NULL), character())
+  expect_identical(stem_spread_cat_choices(NULL, include_char = TRUE), character())
+  expect_identical(stem_spread_cat_choices(data.frame()), character())
+})
+
+test_that("the block's picker observer runs with NULL upstream data", {
+  blk <- new_stem_spreadsheet_export_block()
+
+  # Wiring the block to a source that has not produced data yet (data() is NULL,
+  # e.g. STEM Import before a file is chosen) must not crash the startup observer
+  # that refreshes the exclude/group/weight pickers from data(). Regression for
+  # the "attempt to set an attribute on NULL" crash.
+  expect_no_error(
+    testServer(
+      function(id) blockr.core::expr_server(blk, list(data = reactive(NULL))),
+      {
+        session$flushReact()
+      }
+    )
+  )
+})
+
 test_that("the block tracks its settings in state", {
   blk <- new_stem_spreadsheet_export_block()
   df <- data.frame(

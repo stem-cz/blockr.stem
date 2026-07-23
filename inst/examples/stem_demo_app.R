@@ -1,11 +1,16 @@
 # Minimal blockr.stem demo app
 # -----------------------------
-# Two chains seeded by one blockr.core static block holding a small synthetic,
+# Chains seeded by one blockr.core static block holding a small synthetic,
 # *labelled* survey data set (the variable labels are what the Visualize block's
 # "Show title" option and the PowerPoint chart title display):
-#   1. STEM Variable Selector -> STEM Visualize -> STEM Export (single variable)
-#   2. STEM Visualize battery -> STEM Export (a set of same-scale Likert items,
-#      agree1..agree4, which all share one 5-point agreement scale)
+#   1. STEM Variable Selector -> STEM Visualize --\
+#                                                  >--> STEM Export (chart/battery)
+#   2. STEM Visualize battery --------------------/
+#      A single two-input export block: the STEM Visualize chart feeds its `plot`
+#      input and the STEM Visualize battery (agree1..agree4, all sharing one
+#      5-point agreement scale) feeds its `battery` input. Flip the "Export"
+#      toggle to switch which one is previewed / downloaded (PNG, SVG or native
+#      PowerPoint chart) - or wire just one and it is used regardless.
 #   3. STEM Excel Export - tabulates every categorical variable of the survey
 #      into a downloadable Excel spreadsheet (here grouped by region, weighted)
 #
@@ -109,24 +114,28 @@ survey <- data.frame(
 
 # The modern blockr UI is the docking layout from blockr.dock: build a
 # new_dock_board() (NOT blockr.core::new_board(), which serves an unstyled page)
-# and hand it to serve(). Blocks are named; links connect them via the "data"
-# input port; the edit-board extension adds the toolbar for editing links/blocks;
-# `views` lists the panels shown in the single view (the extension plus the four
-# blocks).
+# and hand it to serve(). Blocks are named; links connect them via named input
+# ports (most take "data"; the two-input export block takes "plot" / "battery");
+# the edit-board extension adds the toolbar for editing links/blocks; `views`
+# lists the panels shown in the single view (the extension plus the blocks).
 serve(
   new_dock_board(
     blocks = c(
       survey = new_static_block(survey),
       select = new_stem_var_selector_block(var = "satisfaction"),
       viz = new_stem_visualize_block(var = "satisfaction", title_show = TRUE),
-      export = new_stem_export_block(format = "pptx"),
       # The battery block reads a set of same-scale items straight from the data,
       # so it connects directly to the static survey block (not via the selector).
       battery = new_stem_visualize_battery_block(
         items = c("agree1", "agree2", "agree3", "agree4"),
         order_by = c("Strongly agree", "Agree")
       ),
-      battery_export = new_stem_export_block(format = "png"),
+      # One two-input STEM Export block fed by BOTH the chart (viz -> `plot`) and
+      # the battery (battery -> `battery`); the "Export" toggle picks which one to
+      # preview / download. PNG works for either; the native PowerPoint chart is
+      # reconstructable from the single-variable chart (the battery exports as an
+      # image).
+      export = new_stem_export_plot_battery_block(target = "plot", format = "png"),
       # The Excel export reads its categorical variables straight from the data,
       # so it too connects directly to the static survey block. Here it groups
       # the frequency tables by region and weights them by the `weight` column.
@@ -137,15 +146,15 @@ serve(
     links = c(
       l1 = new_link("survey", "select", "data"),
       l2 = new_link("select", "viz", "data"),
-      l3 = new_link("viz", "export", "data"),
-      l4 = new_link("survey", "battery", "data"),
-      l5 = new_link("battery", "battery_export", "data"),
+      l3 = new_link("survey", "battery", "data"),
+      # Both plots feed the single export block on its two named input ports.
+      l4 = new_link("viz", "export", "plot"),
+      l5 = new_link("battery", "export", "battery"),
       l6 = new_link("survey", "xlsx_export", "data")
     ),
     extensions = list(edit = new_edit_board_extension()),
     views = list(c(
-      "edit", "survey", "select", "viz", "export", "battery", "battery_export",
-      "xlsx_export"
+      "edit", "survey", "select", "viz", "battery", "export", "xlsx_export"
     ))
   ),
   "my_board"

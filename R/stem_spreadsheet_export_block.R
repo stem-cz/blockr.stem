@@ -197,6 +197,12 @@ block_output.stem_spreadsheet_export_block <- function(x, result, session) {
 # exclude / group pickers. `include_char` mirrors get_categorical_vars(): FALSE
 # offers only factor columns, TRUE factor and character columns.
 stem_spread_cat_choices <- function(data, include_char = FALSE) {
+  # Upstream data is NULL until a source block produces it (e.g. STEM Import
+  # before a file is chosen); return no choices rather than erroring on the
+  # `setNames(NULL, ...)` below.
+  if (is.null(data) || !length(data)) {
+    return(character())
+  }
   is_cat <- vapply(
     data,
     function(x) is.factor(x) || (isTRUE(include_char) && is.character(x)),

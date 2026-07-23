@@ -176,6 +176,15 @@ block_ui.stem_export_block <- function(id, x, ...) {
 #' @rdname new_stem_export_block
 #' @exportS3Method blockr.core::block_output
 block_output.stem_export_block <- function(x, result, session) {
+  stem_export_preview_image(result, session)
+}
+
+# Shared live-preview renderer for the STEM export blocks (single-input
+# `stem_export_block` and two-input `stem_export_plot_battery_block`). Renders
+# `result` - the plot the block passes through - with the *same* ggsave() call as
+# the download handler, so what the user sees matches the exported file, and
+# re-renders whenever the export controls change.
+stem_export_preview_image <- function(result, session) {
   renderImage(
     {
       # Read the export controls reactively so the preview re-renders whenever
