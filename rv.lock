@@ -241,7 +241,7 @@ dependencies = [
 
 [[packages]]
 name = "blockr.stem"
-version = "0.1.4"
+version = "0.1.5"
 source = { path = "." }
 force_source = true
 dependencies = [
