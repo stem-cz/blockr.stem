@@ -5,6 +5,12 @@
 # the blockr.* Remotes from their GitHub HEADs and drifts. Here
 # `rv sync --locked` reproduces exactly the stack we develop and demo against,
 # so CI and local agree.
+#
+# Runs on Linux, macOS and Windows. The git-pinned blockr.* / stemtools /
+# spreadview packages are pure-R, so they install from source on every platform;
+# CRAN deps come from PPM (binaries on Linux, source or binary elsewhere). On
+# Windows that means Rtools is needed to compile any source dependency -
+# `r-lib/actions/setup-r` installs the matching Rtools automatically.
 on:
   push:
     branches: [main, master]
@@ -16,8 +22,17 @@ permissions: read-all
 
 jobs:
   R-CMD-check:
-    runs-on: ubuntu-latest
-    name: ubuntu-latest (pinned via rv)
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (pinned via rv)
+
+    # fail-fast: false so a red on one platform still reports the others.
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { os: ubuntu-latest }
+          - { os: macos-latest }
+          - { os: windows-latest }
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -30,7 +45,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          # Must match `r_version` in rproject.toml so rv resolves the locked stack.
+          # Must match `r_version` in rproject.toml so rv resolves the locked
+          # stack. On Windows this also installs the matching Rtools toolchain,
+          # which the source builds of the git-pinned packages need.
           r-version: '4.6'
 
       - name: Install rv
@@ -38,9 +55,13 @@ jobs:
 
       - name: Install pinned dependencies (exactly rv.lock)
         # --locked fails if rproject.toml and rv.lock have drifted apart.
+        # bash on every OS so the command (and quoting) is identical across the
+        # matrix (Git bash ships on the Windows runners).
+        shell: bash
         run: rv sync --locked
 
       - name: R CMD check against the pinned library
         # --no-sync: run against exactly what the previous step installed.
         # rv run puts the project library on the check subprocess's search path.
+        shell: bash
         run: rv run --no-sync -e 'rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "note")'
