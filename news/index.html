@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">blockr.stem</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,11 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.5" id="blockrstem-015">blockr.stem 0.1.5<a class="anchor" aria-label="anchor" href="#blockrstem-015"></a></h2>
+<ul><li><p><strong>STEM Export (chart/battery)</strong> (<code><a href="../reference/new_stem_export_plot_battery_block.html">new_stem_export_plot_battery_block()</a></code>) — new output block: a two-input variant of <strong>STEM Export</strong> that accepts a plot from a <strong>STEM Visualize</strong> block <em>and</em> a plot from a <strong>STEM Visualize battery</strong> block, with a toggle to choose which one to export. Both inputs are optional, so it works with just one wired up — the toggle picks the target when both are connected and falls back to whichever input <em>is</em> connected otherwise. The PNG / SVG / native PowerPoint export, the size / scaling controls and the live preview are shared with <code><a href="../reference/new_stem_export_block.html">new_stem_export_block()</a></code>, so they behave identically.</p></li>
+<li><p><strong>STEM Excel Export</strong> (<code><a href="../reference/new_stem_spreadsheet_export_block.html">new_stem_spreadsheet_export_block()</a></code>) — fixed a crash at startup (“attempt to set an attribute on NULL”) when the block is wired to an upstream source that has not produced data yet (e.g. STEM Import before a file is chosen). The picker-refresh helper <code>stem_spread_cat_choices()</code> now returns no choices for <code>NULL</code>/empty data, matching <code>stem_weight_choices()</code>.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.4" id="blockrstem-014">blockr.stem 0.1.4<a class="anchor" aria-label="anchor" href="#blockrstem-014"></a></h2>
 <ul><li><p><strong>STEM Excel Export</strong> (<code><a href="../reference/new_stem_spreadsheet_export_block.html">new_stem_spreadsheet_export_block()</a></code>) — new output block that exports the upstream data set as a readable Excel spreadsheet of frequency tables via <code><a href="https://rdrr.io/pkg/spreadview/man/compose_spreadsheet.html" class="external-link">spreadview::compose_spreadsheet()</a></code>. The variables to tabulate are picked automatically with <code><a href="https://rdrr.io/pkg/spreadview/man/get_categorical_vars.html" class="external-link">spreadview::get_categorical_vars()</a></code> — every factor column (add character columns with <strong>Include character variables</strong>), minus any the user chooses to <strong>Exclude</strong> (each listed with its category count, e.g. <code>region (4)</code>). Optional <strong>Grouping variables</strong> and a <strong>Survey weight</strong> are forwarded to <code>compose_spreadsheet()</code>, along with the <strong>percentage</strong> and <strong>drop-missing</strong> formatting toggles. The block passes its data through unchanged and previews it in the output panel. Requires the GitHub-only <code>spreadview (&gt;= 0.3.0)</code> package (in Suggests); character selections are coerced to factors, which <code>compose_spreadsheet()</code> requires. spreadview’s own console warnings/messages are suppressed as noise in a blockr app.</p></li>

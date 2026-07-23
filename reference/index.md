@@ -8,6 +8,10 @@
   [`block_ui(`*`<stem_export_block>`*`)`](https://stem-cz.github.io/blockr.stem/reference/new_stem_export_block.md)
   [`block_output(`*`<stem_export_block>`*`)`](https://stem-cz.github.io/blockr.stem/reference/new_stem_export_block.md)
   : STEM Export block
+- [`new_stem_export_plot_battery_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_export_plot_battery_block.md)
+  [`block_ui(`*`<stem_export_plot_battery_block>`*`)`](https://stem-cz.github.io/blockr.stem/reference/new_stem_export_plot_battery_block.md)
+  [`block_output(`*`<stem_export_plot_battery_block>`*`)`](https://stem-cz.github.io/blockr.stem/reference/new_stem_export_plot_battery_block.md)
+  : STEM Export (chart or battery) block
 - [`new_stem_import_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_import_block.md)
   [`stem_import_volumes()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_import_block.md)
   : STEM Import block

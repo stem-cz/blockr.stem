@@ -1,5 +1,28 @@
 # Changelog
 
+## blockr.stem 0.1.5
+
+- **STEM Export (chart/battery)**
+  ([`new_stem_export_plot_battery_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_export_plot_battery_block.md))
+  — new output block: a two-input variant of **STEM Export** that
+  accepts a plot from a **STEM Visualize** block *and* a plot from a
+  **STEM Visualize battery** block, with a toggle to choose which one to
+  export. Both inputs are optional, so it works with just one wired up —
+  the toggle picks the target when both are connected and falls back to
+  whichever input *is* connected otherwise. The PNG / SVG / native
+  PowerPoint export, the size / scaling controls and the live preview
+  are shared with
+  [`new_stem_export_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_export_block.md),
+  so they behave identically.
+
+- **STEM Excel Export**
+  ([`new_stem_spreadsheet_export_block()`](https://stem-cz.github.io/blockr.stem/reference/new_stem_spreadsheet_export_block.md))
+  — fixed a crash at startup (“attempt to set an attribute on NULL”)
+  when the block is wired to an upstream source that has not produced
+  data yet (e.g. STEM Import before a file is chosen). The
+  picker-refresh helper `stem_spread_cat_choices()` now returns no
+  choices for `NULL`/empty data, matching `stem_weight_choices()`.
+
 ## blockr.stem 0.1.4
 
 - **STEM Excel Export**
